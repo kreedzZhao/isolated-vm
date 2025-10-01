@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YAML Generator - 示例与测试</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      font-size: 1.1em;
+      opacity: 0.9;
+    }
+
+    .content {
+      padding: 30px;
+    }
+
+    .section {
+      margin-bottom: 30px;
+    }
+
+    .section h2 {
+      color: #667eea;
+      margin-bottom: 15px;
+      font-size: 1.5em;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 10px;
+    }
+
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: #f7fafc;
+      color: #667eea;
+      border: 2px solid #667eea;
+    }
+
+    .btn-secondary:hover {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-success {
+      background: #48bb78;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #38a169;
+    }
+
+    .input-group {
+      margin-bottom: 15px;
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #2d3748;
+    }
+
+    .input-group input,
+    .input-group select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e2e8f0;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: border-color 0.3s ease;
+    }
+
+    .input-group input:focus,
+    .input-group select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .output-box {
+      background: #1a202c;
+      color: #68d391;
+      padding: 20px;
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      max-height: 400px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .output-box:empty::before {
+      content: '等待生成 YAML...';
+      color: #718096;
+      font-style: italic;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    }
+
+    .stat-card h3 {
+      font-size: 2em;
+      margin-bottom: 5px;
+    }
+
+    .stat-card p {
+      font-size: 0.9em;
+      opacity: 0.9;
+    }
+
+    .example-code {
+      background: #f7fafc;
+      padding: 15px;
+      border-radius: 6px;
+      border-left: 4px solid #667eea;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      margin-bottom: 15px;
+      overflow-x: auto;
+    }
+
+    .note {
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+    }
+
+    .note-title {
+      font-weight: 700;
+      color: #92400e;
+      margin-bottom: 5px;
+    }
+
+    .note-content {
+      color: #78350f;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 1.8em;
+      }
+
+      .content {
+        padding: 20px;
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🔧 YAML Generator</h1>
+      <p>自动从浏览器 API 生成符合规范的 YAML 配置</p>
+    </div>
+
+    <div class="content">
+      <!-- 快速开始 -->
+      <div class="section">
+        <h2>🚀 快速开始</h2>
+        
+        <div class="note">
+          <div class="note-title">💡 使用提示</div>
+          <div class="note-content">
+            点击下面的按钮生成常用 API 的 YAML 配置，生成结果会显示在输出框中。
+            您也可以打开浏览器控制台查看详细信息。
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button class="btn btn-primary" onclick="testLocation()">生成 Location</button>
+          <button class="btn btn-primary" onclick="testURL()">生成 URL</button>
+          <button class="btn btn-primary" onclick="testNavigator()">生成 Navigator</button>
+          <button class="btn btn-primary" onclick="testHeaders()">生成 Headers</button>
+          <button class="btn btn-secondary" onclick="testCustom()">自定义生成</button>
+          <button class="btn btn-success" onclick="downloadCurrent()">下载当前结果</button>
+        </div>
+
+        <div id="output" class="output-box"></div>
+
+        <!-- 统计信息 -->
+        <div class="stats" id="stats" style="display: none;">
+          <div class="stat-card">
+            <h3 id="stat-instance">0</h3>
+            <p>实例属性</p>
+          </div>
+          <div class="stat-card">
+            <h3 id="stat-prototype-props">0</h3>
+            <p>原型属性</p>
+          </div>
+          <div class="stat-card">
+            <h3 id="stat-methods">0</h3>
+            <p>原型方法</p>
+          </div>
+          <div class="stat-card">
+            <h3 id="stat-static">0</h3>
+            <p>静态成员</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 自定义生成 -->
+      <div class="section">
+        <h2>⚙️ 自定义生成</h2>
+        
+        <div class="input-group">
+          <label for="apiName">API 类名或对象路径</label>
+          <input 
+            type="text" 
+            id="apiName" 
+            placeholder="例如: Location, window.location, URL"
+            value="Location"
+          >
+        </div>
+
+        <div class="input-group">
+          <label for="className">类名（可选，对于实例对象需要指定）</label>
+          <input 
+            type="text" 
+            id="className" 
+            placeholder="留空则自动检测"
+          >
+        </div>
+
+        <button class="btn btn-primary" onclick="generateCustom()">生成 YAML</button>
+      </div>
+
+      <!-- 批量生成 -->
+      <div class="section">
+        <h2>📦 批量生成</h2>
+        
+        <div class="input-group">
+          <label for="apiList">API 列表（每行一个）</label>
+          <textarea 
+            id="apiList" 
+            rows="5" 
+            style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 6px; font-family: monospace;"
+            placeholder="Location&#10;URL&#10;Navigator&#10;Headers"
+          >Location
+URL
+Headers</textarea>
+        </div>
+
+        <button class="btn btn-primary" onclick="generateBatch()">批量生成</button>
+      </div>
+
+      <!-- 使用示例 -->
+      <div class="section">
+        <h2>📖 代码示例</h2>
+        
+        <p style="margin-bottom: 10px;"><strong>在控制台中使用：</strong></p>
+        
+        <div class="example-code">// 生成单个 API
+generateYAML(Location);
+
+// 生成实例对象
+generateYAML(window.location, 'Location');
+
+// 批量生成
+generateMultipleYAML(['Location', 'URL', 'Navigator']);
+
+// 生成并下载
+const yaml = generateYAML(Location);
+downloadYAML(yaml, 'location.yaml');</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 加载 YAML Generator -->
+  <script src="yaml-generator.js"></script>
+
+  <!-- 页面交互逻辑 -->
+  <script>
+    let currentYAML = '';
+
+    function updateOutput(yaml) {
+      currentYAML = yaml;
+      const output = document.getElementById('output');
+      output.textContent = yaml;
+      
+      // 更新统计信息
+      updateStats(yaml);
+    }
+
+    function updateStats(yaml) {
+      const stats = document.getElementById('stats');
+      stats.style.display = 'grid';
+      
+      // 简单统计（通过正则匹配）
+      const instanceProps = (yaml.match(/instanceProperties:/g) || []).length;
+      const prototypeProps = (yaml.match(/prototypeProperties:/g) || []).length;
+      const methods = (yaml.match(/prototypeMethods:|staticMethods:/g) || []).length;
+      const staticMembers = (yaml.match(/staticProperties:|staticMethods:/g) || []).length;
+      
+      // 更精确的统计
+      const instanceCount = (yaml.match(/^  - name: /gm) || []).length;
+      
+      document.getElementById('stat-instance').textContent = 
+        yaml.includes('instanceProperties:') ? (yaml.split('instanceProperties:')[1].split(/^[a-z]/m)[0].match(/  - name:/g) || []).length : 0;
+      
+      document.getElementById('stat-prototype-props').textContent = 
+        yaml.includes('prototypeProperties:') ? (yaml.split('prototypeProperties:')[1].split(/^[a-z]/m)[0].match(/  - name:/g) || []).length : 0;
+      
+      document.getElementById('stat-methods').textContent = 
+        yaml.includes('prototypeMethods:') ? (yaml.split('prototypeMethods:')[1].split(/^[a-z]/m)[0].match(/  - name:/g) || []).length : 0;
+      
+      const staticProps = yaml.includes('staticProperties:') ? (yaml.split('staticProperties:')[1].split(/^[a-z]/m)[0].match(/  - name:/g) || []).length : 0;
+      const staticMethods = yaml.includes('staticMethods:') ? (yaml.split('staticMethods:')[1].split(/^[a-z]/m)[0].match(/  - name:/g) || []).length : 0;
+      document.getElementById('stat-static').textContent = staticProps + staticMethods;
+    }
+
+    function testLocation() {
+      console.clear();
+      console.log('🔍 正在分析 Location...');
+      const yaml = generateYAML(Location);
+      updateOutput(yaml);
+    }
+
+    function testURL() {
+      console.clear();
+      console.log('🔍 正在分析 URL...');
+      const yaml = generateYAML(URL);
+      updateOutput(yaml);
+    }
+
+    function testNavigator() {
+      console.clear();
+      console.log('🔍 正在分析 Navigator...');
+      const yaml = generateYAML(Navigator);
+      updateOutput(yaml);
+    }
+
+    function testHeaders() {
+      console.clear();
+      console.log('🔍 正在分析 Headers...');
+      try {
+        const yaml = generateYAML(Headers);
+        updateOutput(yaml);
+      } catch (e) {
+        console.error('Headers API 不可用:', e);
+        alert('Headers API 在当前环境不可用');
+      }
+    }
+
+    function testCustom() {
+      document.getElementById('apiName').focus();
+      document.getElementById('apiName').select();
+    }
+
+    function generateCustom() {
+      const apiName = document.getElementById('apiName').value.trim();
+      const className = document.getElementById('className').value.trim();
+      
+      if (!apiName) {
+        alert('请输入 API 名称');
+        return;
+      }
+
+      console.clear();
+      console.log(`🔍 正在分析 ${apiName}...`);
+      
+      try {
+        // 尝试解析路径，如 window.location
+        let target = window;
+        const parts = apiName.split('.');
+        
+        for (const part of parts) {
+          target = target[part];
+          if (target === undefined) {
+            throw new Error(`无法找到 ${apiName}`);
+          }
+        }
+        
+        const yaml = generateYAML(target, className || null);
+        updateOutput(yaml);
+      } catch (e) {
+        console.error('生成失败:', e);
+        alert(`生成失败: ${e.message}`);
+      }
+    }
+
+    function generateBatch() {
+      const apiList = document.getElementById('apiList').value
+        .split('\n')
+        .map(s => s.trim())
+        .filter(s => s);
+      
+      if (apiList.length === 0) {
+        alert('请输入至少一个 API 名称');
+        return;
+      }
+
+      console.clear();
+      console.log(`🔍 正在批量生成 ${apiList.length} 个 API...`);
+      
+      const results = generateMultipleYAML(apiList);
+      
+      // 合并所有成功的结果
+      const successful = results.filter(r => r.success);
+      if (successful.length > 0) {
+        const combined = successful.map(r => r.yaml).join('\n\n' + '='.repeat(80) + '\n\n');
+        updateOutput(combined);
+        console.log(`✅ 成功生成 ${successful.length}/${apiList.length} 个 API`);
+      } else {
+        alert('所有 API 生成失败，请查看控制台');
+      }
+    }
+
+    function downloadCurrent() {
+      if (!currentYAML) {
+        alert('请先生成 YAML');
+        return;
+      }
+      
+      // 尝试从 YAML 中提取类名
+      const match = currentYAML.match(/className: (\w+)/);
+      const className = match ? match[1].toLowerCase() : 'class_definition';
+      
+      downloadYAML(currentYAML, `${className}.yaml`);
+    }
+
+    // 快捷键支持
+    document.addEventListener('keydown', (e) => {
+      // Ctrl/Cmd + Enter 生成
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        if (document.activeElement.id === 'apiName' || 
+            document.activeElement.id === 'className') {
+          generateCustom();
+        } else if (document.activeElement.id === 'apiList') {
+          generateBatch();
+        }
+      }
+    });
+
+    // 页面加载时显示欢迎信息
+    console.log('%c🎉 YAML Generator 已加载！', 'color: #667eea; font-size: 20px; font-weight: bold;');
+    console.log('%c💡 尝试点击上方按钮生成 YAML，或在控制台直接使用:', 'color: #764ba2; font-size: 14px;');
+    console.log('   generateYAML(Location)');
+    console.log('   generateMultipleYAML(["Location", "URL", "Navigator"])');
+  </script>
+</body>
+</html>
+
+

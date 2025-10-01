@@ -1,6 +1,16 @@
 {
 	"version": "0.2.0",
-	"configurations": [ {
+	"configurations": [
+		{
+			"name": "Launch Test Program",
+			"program": "${workspaceFolder}/inspector-example.js",
+			"request": "launch",
+			"skipFiles": [
+				"<node_internals>/**"
+			],
+			"type": "node"
+		},
+		 {
 		"name": "Launch",
 		"type": "lldb",
 		"request": "launch",

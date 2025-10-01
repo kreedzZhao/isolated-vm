@@ -477,8 +477,43 @@ static void DeserializeInternalFieldsCallback(Local<Object> /*holder*/, int /*in
 }
 
 auto IsolateEnvironment::NewContext() -> Local<Context> {
+
+	// 为 global 添加属性
+	Local<ObjectTemplate> globalTemplate = ObjectTemplate::New(isolate);
+	globalTemplate->Set(isolate, "kreedz", Number::New(isolate, 100));
+	// globalTemplate->Set(isolate, "Location", locationTpl, PropertyAttribute::DontEnum);
+	Local<FunctionTemplate> locationGetter = FunctionTemplate::New(isolate,
+		[](const FunctionCallbackInfo<Value>& info) {
+			Isolate* isolate = info.GetIsolate();
+			Local<FunctionTemplate> locationTpl = FunctionTemplate::New(isolate);
+			locationTpl->SetClassName(String::NewFromUtf8(isolate, "Location").ToLocalChecked());
+			Local<ObjectTemplate> proto = locationTpl->PrototypeTemplate();
+			proto->Set(Symbol::GetToStringTag(isolate), String::NewFromUtf8(isolate, "Location").ToLocalChecked(), PropertyAttribute::DontEnum);
+			// 定义 location
+			Local<ObjectTemplate> locationInstanceTpl = locationTpl->InstanceTemplate();
+			locationInstanceTpl->Set(isolate, "href", String::NewFromUtf8(isolate, "https://www.baidu.com").ToLocalChecked(), PropertyAttribute::DontEnum);
+		
+			info.GetReturnValue().Set(
+				locationInstanceTpl->NewInstance(isolate->GetCurrentContext()).ToLocalChecked()
+			);
+		}
+	);
+	Local<FunctionTemplate> locationSetter = FunctionTemplate::New(isolate,
+		[](const FunctionCallbackInfo<Value>& info) {
+			Isolate* isolate = info.GetIsolate();
+			info.GetReturnValue().Set(Undefined(isolate));
+		}
+	);
+	
+	globalTemplate->SetAccessorProperty(
+		String::NewFromUtf8(isolate, "location").ToLocalChecked(),
+		locationGetter,
+		locationSetter,
+		PropertyAttribute::DontDelete
+	);
+
 	auto context =
-	Context::New(isolate, nullptr, {}, {}, &DeserializeInternalFieldsCallback);
+	Context::New(isolate, nullptr, globalTemplate, {}, &DeserializeInternalFieldsCallback);
 	context->AllowCodeGenerationFromStrings(false);
 	// TODO (but I'm not going to do it): This causes a DCHECK failure in debug builds. Tested nodejs
 	// v14.17.3 & v16.5.1.
